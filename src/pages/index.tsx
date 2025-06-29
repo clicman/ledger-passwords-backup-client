@@ -41,7 +41,7 @@ export default function Home() {
         device_handler.disconnect();
         setConnected(false);
         toast.dismiss();
-        toast.error(`${error.toString()} 🙅`);
+        toast.error(`${(error as Error).toString()} 🙅`);
       } finally {
         setBusy(false);
         resolve(result);
