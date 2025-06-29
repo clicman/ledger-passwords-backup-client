@@ -1,0 +1,77 @@
+// Variables
+$background-color: #232123;
+$primary-color: #41ccb4;
+$secondary-color: #FFB86D;
+$link-color: #61dafb;
+$white: white;
+
+// Global styles
+html {
+  background-color: $background-color;
+}
+
+.App {
+  text-align: center;
+
+  &-banner {
+    margin-top: 10vh;
+    margin-bottom: 10vh;
+    justify-content: center;
+    display: flex;
+    flex-direction: row;
+    max-height: 10vh;
+    color: $white;
+  }
+
+  &-header {
+    min-width: 100vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: $white;
+  }
+
+  &-logo {
+    width: 10vh;
+    height: auto;
+    pointer-events: none;
+  }
+
+  &-title {
+    margin-left: 1.5vh;
+    font-size: 3vh;
+    font-weight: 1;
+  }
+
+  &-link {
+    color: $link-color;
+  }
+
+  &-footer {
+    a {
+      color: $link-color;
+      text-decoration: none;
+    }
+
+    @media only screen and (orientation: landscape) {
+      margin-top: 6vh;
+      font-size: 1.2vh;
+    }
+
+    @media only screen and (orientation: portrait) {
+      margin-top: 6vw;
+      font-size: 1.2vw;
+    }
+  }
+}
+
+.Commands {
+  margin-bottom: 6vh;
+  display: flex;
+  flex-direction: row;
+}
+
+.Toastify__toast-container {
+  width: 400px;
+} 

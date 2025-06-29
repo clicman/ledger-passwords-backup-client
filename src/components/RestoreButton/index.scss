@@ -1,0 +1,35 @@
+// Variables
+$button-border-radius: 12px;
+$button-transition: 0.3s;
+$button-disabled-opacity: 0.5;
+$button-hover-opacity: 0.8;
+
+.RestoreButton {
+  border: none;
+  color: white;
+  border-radius: $button-border-radius;
+  opacity: 1;
+  transition: $button-transition;
+  padding-left: 0;
+  padding-right: 0;
+
+  &:disabled {
+    opacity: $button-disabled-opacity;
+  }
+
+  &:hover:enabled {
+    opacity: $button-hover-opacity;
+  }
+
+  @media only screen and (orientation: landscape) {
+    width: 15vw;
+    height: 10vw;
+    font-size: 3vw;
+  }
+
+  @media only screen and (orientation: portrait) {
+    width: 15vh;
+    height: 10vh;
+    font-size: 3vh;
+  }
+} 

@@ -1,0 +1,105 @@
+// Variables
+$accordion-border: 5px solid rgb(57, 55, 55);
+$accordion-border-radius: 0px;
+$accordion-bg-color: #232123;
+$accordion-text-color: #f4f4f4;
+$accordion-hover-color: #444;
+$code-color: #7cfc00;
+$link-color: #7cfc00;
+$accordion-transition: 0.3s;
+$fadein-duration: 0.35s;
+
+/**
+* ----------------------------------------------
+* Demo styles
+* ----------------------------------------------
+**/
+
+.accordion {
+  text-align: left;
+  font: Monaco, Consolas, 'Andale Mono', 'DejaVu Sans Mono', monospace;
+  border: $accordion-border;
+  border-radius: $accordion-border-radius;
+
+  @media only screen and (orientation: landscape) {
+    width: 70vw;
+    font-size: 1.2vw;
+  }
+
+  @media only screen and (orientation: portrait) {
+    width: 90vw;
+    font-size: 1.2vh;
+  }
+
+  &__item + &__item {
+    border-top: $accordion-border;
+    border-radius: $accordion-border-radius;
+  }
+
+  &__button {
+    background-color: $accordion-bg-color;
+    color: $accordion-text-color;
+    cursor: pointer;
+    padding: 18px;
+    text-align: left;
+    border: none;
+    transition: $accordion-transition;
+
+    &:before {
+      display: inline-block;
+      content: '';
+      height: 1vh;
+      width: 1vh;
+      margin-right: 12px;
+      border-bottom: 2px solid currentColor;
+      border-right: 2px solid currentColor;
+      transform: rotate(-45deg);
+
+      @media only screen and (orientation: landscape) {
+        height: 1vw;
+        width: 1vw;
+      }
+
+      @media only screen and (orientation: portrait) {
+        height: 1vh;
+        width: 1vh;
+      }
+    }
+
+    &[aria-expanded='true']::before,
+    &[aria-selected='true']::before {
+      transform: rotate(45deg);
+    }
+  }
+
+  &__panel {
+    padding: 20px;
+    animation: fadein $fadein-duration ease-in;
+  }
+}
+
+[hidden] {
+  display: none;
+}
+
+code {
+  color: $code-color;
+}
+
+a {
+  color: $link-color;
+}
+
+/* -------------------------------------------------- */
+/* ---------------- Animation part ------------------ */
+/* -------------------------------------------------- */
+
+@keyframes fadein {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
