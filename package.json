@@ -76,11 +76,12 @@
       "out/**",
       "node_modules/**",
       "package.json",
-      "public/logo512.png"
+      "public/logo512.png",
+      "public/logomac.png"
     ],
     "mac": {
       "target": "dmg",
-      "icon": "public/logo512.png"
+      "icon": "public/logomac.png"
     },
     "win": {
       "target": "nsis",
