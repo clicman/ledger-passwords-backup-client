@@ -12,7 +12,11 @@
     "lint": "next lint",
     "serve:out": "serve -s out -l 3000",
     "dist": "npm run build && electron-builder",
-    "dist:linux-x64": "electron-builder --linux AppImage --x64"
+    "dist:linux-x64": "electron-builder --linux AppImage --x64",
+    "dist:mac-arm64": "electron-builder --mac --arm64",
+    "dist:mac-x64": "electron-builder --mac --x64",
+    "dist:win-x64": "electron-builder --win --x64",
+    "dist:win-arm64": "electron-builder --win --arm64"
   },
   "dependencies": {
     "@ledgerhq/hw-transport-webusb": "6.29.7",
