@@ -80,6 +80,14 @@ async function createWindow() {
       }
     },
   );
+
+  // Open links in external browser
+  mainWindow.webContents.on('will-navigate', (event, newWindow) => {
+    if (newWindow.startsWith('https:')) {
+      event.preventDefault();
+      require('electron').shell.openExternal(newWindow);
+    }
+  });
 }
 
 app.whenReady().then(createWindow);
