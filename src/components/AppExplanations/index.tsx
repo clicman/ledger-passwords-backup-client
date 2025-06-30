@@ -57,7 +57,7 @@ export default function AppExplanations() {
         </Accordion.Header>
         <Accordion.Content className="accordion__panel">
           <div className="Explanations">
-            <ReactMarkdown children={whatIsThisWebApp_help} />
+            <ReactMarkdown>{whatIsThisWebApp_help}</ReactMarkdown>
           </div>
         </Accordion.Content>
       </Accordion.Item>
@@ -73,7 +73,7 @@ export default function AppExplanations() {
         </Accordion.Header>
         <Accordion.Content className="accordion__panel">
           <div className="Explanations">
-            <ReactMarkdown children={whatIsTheLedgerPasswordsApp_help} />
+            <ReactMarkdown>{whatIsTheLedgerPasswordsApp_help}</ReactMarkdown>
           </div>
         </Accordion.Content>
       </Accordion.Item>
@@ -86,7 +86,7 @@ export default function AppExplanations() {
         </Accordion.Header>
         <Accordion.Content className="accordion__panel">
           <div className="Explanations">
-            <ReactMarkdown children={howToUseThisWebApp_help} />
+            <ReactMarkdown>{howToUseThisWebApp_help}</ReactMarkdown>
           </div>
         </Accordion.Content>
       </Accordion.Item>
@@ -99,7 +99,7 @@ export default function AppExplanations() {
         </Accordion.Header>
         <Accordion.Content className="accordion__panel">
           <div className="Explanations">
-            <ReactMarkdown children={whichbrowsersAreSupported_help} />
+            <ReactMarkdown>{whichbrowsersAreSupported_help}</ReactMarkdown>
           </div>
         </Accordion.Content>
       </Accordion.Item>
@@ -112,7 +112,7 @@ export default function AppExplanations() {
         </Accordion.Header>
         <Accordion.Content className="accordion__panel">
           <div className="Explanations">
-            <ReactMarkdown children={lessCommonUseCases_help} />
+            <ReactMarkdown>{lessCommonUseCases_help}</ReactMarkdown>
           </div>
         </Accordion.Content>
       </Accordion.Item>

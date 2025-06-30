@@ -7,11 +7,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "electron": "electron .",
+    "lint": "next lint",
+    "serve:out": "serve -s out -l 3000",
+    "dist": "npm run build && electron-builder",
+    "dist:linux-x64": "electron-builder --linux AppImage --x64"
   },
   "dependencies": {
     "@ledgerhq/hw-transport-webusb": "6.29.7",
     "@radix-ui/react-accordion": "^1.2.11",
+    "express": "^4.18.2",
     "next": "15.3.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -22,8 +27,6 @@
   },
   "eslintConfig": {
     "extends": [
-      "react-app",
-      "react-app/jest",
       "next/core-web-vitals"
     ]
   },
@@ -49,9 +52,38 @@
     "@types/react-dom": "19.1.6",
     "ajv": "8.17.1",
     "ajv-keywords": "5.1.0",
+    "electron": "^37.1.0",
+    "electron-builder": "^26.0.12",
     "eslint-config-next": "^15.3.4",
+    "eslint-config-react-app": "^7.0.1",
     "gh-pages": "^6.3.0",
     "prettier": "3.6.2",
     "typescript": "5.8.3"
+  },
+  "main": "main.js",
+  "build": {
+    "appId": "com.yourcompany.ledgerpasswordsbackup",
+    "productName": "Ledger Passwords Backup",
+    "files": [
+      "main.js",
+      "preload.js",
+      "server.js",
+      "out/**",
+      "node_modules/**",
+      "package.json",
+      "public/logo512.png"
+    ],
+    "mac": {
+      "target": "dmg",
+      "icon": "public/logo512.png"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "public/logo512.png"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "public/logo512.png"
+    }
   }
 }
