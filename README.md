@@ -36,15 +36,67 @@ The communication with the device is done through `WebUSB`, which is currently s
 - If you ever encounter a WTF-kind of error with your passwords app (some or all of your entries are suddenly gone? A password has changed ?), it is wise to first come here and make a backup. You can then have a look inside the backup file to see if something is wrong (You might also want to create an issue [here](https://github.com/LedgerHQ/app-passwords/issues) so we fix your issue for all users).
 - If you want to add a lot of new passwords, the manual input on the device keyboard will show its limits. You can instead create a backup and edit it manually to add all your new entries. You just have to restore your app with this file and the job is done :)
 
-## Building the project
+## Building and Running the Web Version
+
+To build and run the web version locally:
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Start the server:
+   ```bash
+   npm run start
+   ```
+
+The app will be available at http://localhost:3000
+
+## Electron app build Instructions for Each Platform
+
+Before building for any platform, make sure to:
+
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Build the project:
+   ```bash
+   npm run build
+   ```
+
+You can then build the Electron app for each platform using the following commands:
+
+### macOS (x64)
 
 ```bash
-$ npm install
-$ npm run start
+npm run dist:mac-x64
 ```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### macOS (arm64)
+
+```bash
+npm run dist:mac-arm64
+```
+
+### Windows (x64)
+
+```bash
+npm run dist:win-x64
+```
+
+### Windows (arm64)
+
+```bash
+npm run dist:win-arm64
+```
+
+### Linux (x64, AppImage)
+
+```bash
+npm run dist:linux-x64
+```
+
+The output files will be located in the `dist/` directory after each build.
 
 ## Credits
 
