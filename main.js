@@ -1,7 +1,9 @@
 const { app, BrowserWindow } = require('electron');
+const { server } = require('./server');
 const path = require('path');
 const http = require('http');
 
+let serverUrl;
 let serverStarted = false;
 
 function waitForServer(url, timeout = 10000) {
@@ -24,10 +26,21 @@ function waitForServer(url, timeout = 10000) {
 
 async function createWindow() {
   if (!serverStarted) {
-    require('./server');
     serverStarted = true;
+    // Wait for the server to start and get the actual port
+    await new Promise((resolve) => {
+      const checkPort = () => {
+        if (server.address().port) {
+          serverUrl = `http://localhost:${server.address().port}`;
+          resolve();
+        } else {
+          setTimeout(checkPort, 100);
+        }
+      };
+      checkPort();
+    });
   }
-  await waitForServer('http://localhost:3000');
+  await waitForServer(serverUrl);
 
   const mainWindow = new BrowserWindow({
     width: 1200,
@@ -40,7 +53,7 @@ async function createWindow() {
     },
   });
 
-  mainWindow.loadURL('http://localhost:3000');
+  mainWindow.loadURL(serverUrl);
 
   // WebUSB device selection handler
   mainWindow.webContents.session.on(
