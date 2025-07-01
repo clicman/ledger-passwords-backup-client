@@ -1,13 +1,17 @@
-import TransportWebUSB from "@ledgerhq/hw-transport-webusb";
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 
-const insAPDU = Object.freeze({
+const allowedStatuses = [
+  0x9000, 0x6985, 0x6a86, 0x6a87, 0x6d00, 0x6e00, 0xb000,
+];
+
+const insAPDU = {
   GET_APP_INFO_COMMAND: 0x01,
   GET_APP_CONFIG_COMMAND: 0x03,
   DUMP_METADATAS_COMMAND: 0x04,
   LOAD_METADATAS_COMMAND: 0x05,
-});
+};
 
-const passwordsCharsets = Object.freeze({
+const passwordsCharsets = {
   UPPERCASE: 1,
   LOWERCASE: 2,
   NUMBERS: 4,
@@ -16,7 +20,7 @@ const passwordsCharsets = Object.freeze({
   SPACE: 32,
   SPECIAL: 64,
   BRACKETS: 128,
-});
+};
 
 const allPasswordsCharsets = 0xff;
 
@@ -39,7 +43,6 @@ interface AppConfig {
 }
 
 class PasswordsManager {
-  private allowedStatuses: number[];
   public connected: boolean;
   private busy: boolean;
   private transport: TransportWebUSB | null;
@@ -47,15 +50,6 @@ class PasswordsManager {
   private storage_size?: number;
 
   constructor() {
-    this.allowedStatuses = [
-      0x9000,
-      0x6985,
-      0x6a86,
-      0x6a87,
-      0x6d00,
-      0x6e00,
-      0xb000,
-    ];
     this.connected = false;
     this.busy = false;
     this.transport = null;
@@ -66,11 +60,11 @@ class PasswordsManager {
       if (!this.transport) this.transport = await TransportWebUSB.create();
       try {
         const [appName, version] = await this.getAppInfo();
-        if (appName.toString() !== "Passwords")
-          throw new Error("The Passwords app is not opened on the device");
+        if (appName.toString() !== 'Passwords')
+          throw new Error('The Passwords app is not opened on the device');
         this.version = version;
         let appConfig = await this.getAppConfig();
-        this.storage_size = appConfig["storage_size"];
+        this.storage_size = appConfig['storage_size'];
         this.connected = true;
       } catch (error) {
         await this.transport!.close();
@@ -92,16 +86,16 @@ class PasswordsManager {
   }
 
   mapProtocolError(result: Buffer): void {
-    if (result.length < 2) throw new Error("Response length is too small");
+    if (result.length < 2) throw new Error('Response length is too small');
 
     const errors: { [key: number]: string } = {
-      0x6985: "Action cancelled",
-      0x6a86: "SW_WRONG_P1P2",
-      0x6a87: "SW_WRONG_DATA_LENGTH",
-      0x6d00: "SW_INS_NOT_SUPPORTED",
-      0x6e00: "SW_CLA_NOT_SUPPORTED",
-      0xb000: "SW_APPNAME_TOO_LONG",
-      0x6f10: "SW_METADATAS_PARSING_ERROR",
+      0x6985: 'Action cancelled',
+      0x6a86: 'SW_WRONG_P1P2',
+      0x6a87: 'SW_WRONG_DATA_LENGTH',
+      0x6d00: 'SW_INS_NOT_SUPPORTED',
+      0x6e00: 'SW_CLA_NOT_SUPPORTED',
+      0xb000: 'SW_APPNAME_TOO_LONG',
+      0x6f10: 'SW_METADATAS_PARSING_ERROR',
     };
 
     let error = result.readUInt16BE(result.length - 2);
@@ -111,7 +105,7 @@ class PasswordsManager {
   }
 
   private _lock(): void {
-    if (this.busy) throw new Error("Device is busy");
+    if (this.busy) throw new Error('Device is busy');
     this.busy = true;
   }
 
@@ -131,31 +125,32 @@ class PasswordsManager {
   private _bitmaskToCharsetList(bitmask: number): string[] {
     let charsetList: string[] = [];
     if (bitmask === 0x00 || bitmask === allPasswordsCharsets) {
-      charsetList.push("ALL_SETS");
+      charsetList.push('ALL_SETS');
     } else {
       for (const charset in passwordsCharsets) {
-        if ((passwordsCharsets as any)[charset] & bitmask) charsetList.push(charset);
+        if ((passwordsCharsets as any)[charset] & bitmask)
+          charsetList.push(charset);
       }
     }
     return charsetList;
   }
 
   private _toBytes(json_metadatas: string): Buffer {
-    if (!this.storage_size) throw new Error("Storage size not initialized");
-    
+    if (!this.storage_size) throw new Error('Storage size not initialized');
+
     let metadatas = Buffer.alloc(this.storage_size);
-    let parsed_metadatas = JSON.parse(json_metadatas)["parsed"];
+    let parsed_metadatas = JSON.parse(json_metadatas)['parsed'];
     let offset = 0;
     parsed_metadatas.forEach((element: any) => {
-      let nickname = element["nickname"];
-      let charsets = this._charsetListToBitmask(element["charsets"]);
+      let nickname = element['nickname'];
+      let charsets = this._charsetListToBitmask(element['charsets']);
       if (nickname.length > 19)
         throw new Error(
-          `Nickname too long (19 max): ${nickname} has length ${nickname.length}`
+          `Nickname too long (19 max): ${nickname} has length ${nickname.length}`,
         );
       if (offset + 3 + nickname.length >= this.storage_size!)
         throw new Error(
-          `Not enough memory on this device to restore this backup`
+          `Not enough memory on this device to restore this backup`,
         );
       metadatas[offset++] = nickname.length + 1;
       metadatas[offset++] = 0x00;
@@ -192,20 +187,23 @@ class PasswordsManager {
       parsed: metadatas_list,
       nicknames_erased_but_still_stored: erased_list,
       corruptions_encountered: corruptions,
-      raw_metadatas: metadatas.toString("hex"),
+      raw_metadatas: metadatas.toString('hex'),
     };
   }
 
-  private async _load_metadatas_chunk(chunk: Buffer, is_last: boolean): Promise<Buffer> {
-    if (!this.transport) throw new Error("Transport not initialized");
-    
+  private async _load_metadatas_chunk(
+    chunk: Buffer,
+    is_last: boolean,
+  ): Promise<Buffer> {
+    if (!this.transport) throw new Error('Transport not initialized');
+
     let result = await this.transport.send(
       0xe0,
       insAPDU.LOAD_METADATAS_COMMAND,
       is_last ? 0xff : 0x00,
       0x00,
       Buffer.from(chunk),
-      this.allowedStatuses
+      allowedStatuses,
     );
     if (!this.isSuccess(result)) this.mapProtocolError(result);
     return result;
@@ -214,15 +212,15 @@ class PasswordsManager {
   async getAppInfo(): Promise<[string, string]> {
     this._lock();
     try {
-      if (!this.transport) throw new Error("Transport not initialized");
-      
+      if (!this.transport) throw new Error('Transport not initialized');
+
       let result = await this.transport.send(
         0xb0,
         insAPDU.GET_APP_INFO_COMMAND,
         0x00,
         0x00,
         Buffer.alloc(0),
-        this.allowedStatuses
+        allowedStatuses,
       );
       if (!this.isSuccess(result)) this.mapProtocolError(result);
 
@@ -240,7 +238,7 @@ class PasswordsManager {
         return [app_name, app_version];
       } catch (error) {
         throw new Error(
-          `Unexpected result from device, parsing error: ${error}`
+          `Unexpected result from device, parsing error: ${error}`,
         );
       }
     } finally {
@@ -251,15 +249,15 @@ class PasswordsManager {
   async getAppConfig(): Promise<AppConfig> {
     this._lock();
     try {
-      if (!this.transport) throw new Error("Transport not initialized");
-      
+      if (!this.transport) throw new Error('Transport not initialized');
+
       let result = await this.transport.send(
         0xe0,
         insAPDU.GET_APP_CONFIG_COMMAND,
         0x00,
         0x00,
         Buffer.alloc(0),
-        this.allowedStatuses
+        allowedStatuses,
       );
       if (!this.isSuccess(result)) this.mapProtocolError(result);
       result = result.slice(0, result.length - 2);
@@ -278,8 +276,9 @@ class PasswordsManager {
   async dump_metadatas(): Promise<MetadataResult> {
     this._lock();
     try {
-      if (!this.transport || !this.storage_size) throw new Error("Not properly initialized");
-      
+      if (!this.transport || !this.storage_size)
+        throw new Error('Not properly initialized');
+
       let metadatas = Buffer.alloc(0);
       while (metadatas.length < this.storage_size) {
         let result = await this.transport.send(
@@ -288,7 +287,7 @@ class PasswordsManager {
           0x00,
           0x00,
           Buffer.alloc(0),
-          this.allowedStatuses
+          allowedStatuses,
         );
         if (!this.isSuccess(result)) this.mapProtocolError(result);
         metadatas = Buffer.concat([
@@ -297,7 +296,7 @@ class PasswordsManager {
         ]);
         if (result[0] === 0xff && metadatas.length < this.storage_size) {
           throw new Error(
-            `${this.storage_size} bytes requested but only ${metadatas.length} bytes available`
+            `${this.storage_size} bytes requested but only ${metadatas.length} bytes available`,
           );
         }
       }
@@ -312,13 +311,13 @@ class PasswordsManager {
     try {
       let metadatas = this._toBytes(JSON_metadatas);
       if (metadatas.length === 0) {
-        throw new Error("No data to load");
+        throw new Error('No data to load');
       }
       for (let i = 0; i < metadatas.length; i += 0xff) {
         let chunk = metadatas.slice(i, i + 0xff);
         await this._load_metadatas_chunk(
           chunk,
-          i + chunk.length === metadatas.length ? true : false
+          i + chunk.length === metadatas.length ? true : false,
         );
       }
     } finally {
@@ -327,4 +326,4 @@ class PasswordsManager {
   }
 }
 
-export default PasswordsManager; 
+export default PasswordsManager;
